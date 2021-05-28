@@ -1,0 +1,13 @@
+Changelog for Paykeeper.
+
+1.0.2
+==============
+- Add force discounts check.
+
+1.0.1
+==============
+- Fix bugs.
+
+1.0.0
+==============
+- Initial release.
