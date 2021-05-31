@@ -21,7 +21,10 @@ class Paykeeper extends msPaymentHandler implements msPaymentInterface {
     private $order_total = 0; //order total sum
     private $shipping_price = 0; //shipping price
     private $use_delivery = false;
+    public $single_item_index = -1;
+    public $more_then_one_item_index = -1;
     private $order_params = NULL;
+
 
     public $config;
     public $modx;
@@ -161,7 +164,7 @@ class Paykeeper extends msPaymentHandler implements msPaymentInterface {
         );
 
         //GENERATE FZ54 CART
-
+        $item_index = 0;
         $cart_data = $this->modx->getCollection('msOrderProduct', array('order_id' => $this->order['orderid']));
         foreach ($cart_data as $product_k => $product_v) {
             $taxes = array("tax" => "none", "tax_sum" => 0);
@@ -169,11 +172,16 @@ class Paykeeper extends msPaymentHandler implements msPaymentInterface {
             $name = strval($product_id->pagetitle);
             $price = floatval($product_v->price);
             $quantity = floatval($product_v->count);
+            if ($quantity == 1 && $pk_obj->single_item_index < 0)
+                $pk_obj->single_item_index = $item_index;
+            if ($quantity > 1 && $pk_obj->more_then_one_item_index < 0)
+                $pk_obj->more_then_one_item_index = $item_index;
             $sum = $price*$quantity;
             $tax_rate = intval($this->config['paykeeper_tax_product']);
             $taxes = $pk_obj->setTaxes($tax_rate, false);
             $pk_obj->updateFiscalCart($pk_obj->getPaymentFormType(),
                 $name, $price, $quantity, $sum, $taxes["tax"]);
+            $item_index++;
         }
 
         //add shipping parameters to cart
