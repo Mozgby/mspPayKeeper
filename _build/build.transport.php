@@ -29,8 +29,11 @@ $sources = array(
 		'components/minishop2/lexicon/en/msp.paykeeper.inc.php',
 		'components/minishop2/lexicon/ru/msp.paykeeper.inc.php'
 	)
-	,'docs' => $root . 'docs/'
+	,'docs' => $root . 'docs/',
+    'source_manager' => array(
+        'templates/paykeeper.php')
 );
+
 require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 require_once $sources['build'] . '/includes/functions.php';
 
@@ -97,6 +100,13 @@ foreach($sources['source_core'] as $file) {
 		'target' => "return MODX_CORE_PATH . '{$dir}';"
 	));
 }
+foreach($sources['source_manager'] as $file) {
+    $dir = dirname($file) . '/';
+    $vehicle->resolve('file',array(
+        'source' => $root . 'manager/'. $file,
+        'target' => "return MODX_MANAGER_PATH . '{$dir}';"
+    ));
+}
 unset($file, $attributes);
 
 $resolvers = array('settings');
@@ -128,6 +138,7 @@ $modx->log(modX::LOG_LEVEL_INFO,'Added package attributes and setup options.');
 /* zip up package */
 $modx->log(modX::LOG_LEVEL_INFO,'Packing up transport package zip...');
 $builder->pack();
+$modx->log(modX::LOG_LEVEL_INFO,"\n<br />Package Built.<br />");
 $modx->log(modX::LOG_LEVEL_INFO,"\n<br />Package Built.<br />");
 
 $mtime= microtime();
